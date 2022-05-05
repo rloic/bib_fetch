@@ -1,8 +1,9 @@
 use select::document::Document;
 use select::predicate::{Attr, Class, Name, Predicate};
+use clap::Parser;
 
 trait BibtexServer {
-    fn fetch(&self, query: String) -> String;
+    fn fetch(&self, query: &str) -> String;
 }
 
 struct DBLP {}
@@ -27,11 +28,11 @@ impl DBLP {
 }
 
 impl BibtexServer for DBLP {
-    fn fetch(&self, query: String) -> String {
+    fn fetch(&self, query: &str) -> String {
         let entry_selector = Name("ul").and(Class("publ-list")).child(Name("li").and(Class("entry")));
         let bibtex_link_selector = Class("body").child(Name("ul")).child(Name("li")).child(Name("a").and(Attr("href", ())));
 
-        let encoded_query = String::from(urlencoding::encode(&query));
+        let encoded_query = String::from(urlencoding::encode(query));
 
         let mut url_query = String::from(DBLP::URL);
         url_query.push_str(&encoded_query);
@@ -55,9 +56,16 @@ impl BibtexServer for DBLP {
     }
 }
 
+#[derive(Parser, Debug)]
+#[clap(author, version, about, long_about = None)]
+struct Cli {
+    queries: Vec<String>
+}
+
 fn main() {
     let dblp_server = DBLP{};
-    for query in std::env::args() {
-        println!("{}", dblp_server.fetch(query));
+    let args: Cli = Cli::parse();
+    for query in &args.queries {
+        println!("{}", dblp_server.fetch(query.as_str()));
     }
 }
