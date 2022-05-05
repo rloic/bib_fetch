@@ -11,3 +11,6 @@ urlencoding = "2.1.0"
 reqwest = { version = "0.11.10", features = ["blocking"] }
 regex = "1.5.5"
 clap = { version = "3.1.15", features = ["derive"] }
+sxd-xpath = "0.4.2"
+sxd-document = "0.3.2"
+xpath_reader = "0.5.3"
